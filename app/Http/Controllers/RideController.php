@@ -10,6 +10,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 class RideController extends APIController
 {
+
+  public $transportationClass = 'App\Http\Controllers\TransportationController';
   function __construct(){
     $this->model = new Ride();
     $this->notRequired = array(
@@ -23,67 +25,70 @@ class RideController extends APIController
       'code'
     );
   }
-
+  
   public function retrieve(Request $request){
     $data = $request->all();
     $this->retrieveDB($data);
     $i = 0;
     $data = $this->response['data'];
     foreach ($data as $key) {
-      $fromTo = $this->checkRoute($key);
-      $data[$i]['from_status'] = $fromTo['from'];
-      $data[$i]['to_status'] = $fromTo['to']; // work on this later
-      $data[$i]['created_at_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['created_at'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
-      $data[$i]['from_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['from_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
-      $data[$i]['to_date_human'] = Carbon::createFromFormat('Y-m-d H:i:s', $key['to_date_time'])->copy()->tz($this->response['timezone'])->format('F j, Y h:i A');
+      $data[$i]['created_at_human'] = $this->daysDiffDateTime($data[$i]['created_at']);
+      if($key['payload'] == 'manual'){
+        $data[$i]['transportation'] = null;
+        $route_status = $this->checkRoute($key);
+        $data[$i]['from_status'] = $route_status['from'];
+        $data[$i]['to_status'] = $route_status['to'];
+        $data[$i]['from_date_human'] = $this->daysDiffDateTime($data[$i]['from_date_time']);
+        $data[$i]['to_date_human'] = $this->daysDiffDateTime($data[$i]['to_date_time']);
+      }else if($key['payload'] == 'qr'){
+        $data[$i]['transportation'] = app($this->transportationClass)->getByParams('account_id', $key['owner']);
+        $route_status = $this->checkQrRoute($key);
+        $data[$i]['from_status'] = $route_status;
+        $data[$i]['to_status'] = $route_status;
+      }
       $i++;
     }
     $this->response['data'] = $data;
     return $this->response();
   }
+
+  public function checkQrRoute($route){
+    $retVal = 'negative';
+    $possibleStatus = array('death','positive','pum','pui','negative');
+    $rides_status = DB::table('rides AS T1')
+      ->join("patients AS T2","T1.account_id",'=','T2.account_id')
+      ->whereIn('T1.transportation_id', [$route['transportation_id']])
+      ->select(['T2.status AS status'])
+      ->get();
+    $rides_status = json_decode($rides_status,true);
+    foreach ($rides_status as $key => $value) {
+      if (array_search($value['status'], $possibleStatus) < array_search($retVal, $possibleStatus)){
+        $retVal = $value['status'];
+      }
+    }
+    return $retVal;
+  }
+  
   public function checkRoute($route){
-    $routes[0] = DB::table('visited_places AS T1')
+    $retVal = array('from'=>'negative','to'=>'negative');
+    $possibleStatus = array('death','positive','pum','pui','negative');
+    $routes = DB::table('visited_places AS T1')
       ->join("patients AS T2","T1.account_id",'=','T2.account_id')
-      ->where('T1.route','=',$route['from'])
-      ->where('T1.account_id','!=',$route['account_id'])
-      ->pluck('status');
-    $routes[1] = DB::table('visited_places AS T1')
-      ->join("patients AS T2","T1.account_id",'=','T2.account_id')
-      ->where('T1.route','=',$route['to'])
-      ->where('T1.account_id','!=',$route['account_id'])
-      ->pluck('status');
-    $person = Patient::where("account_id","=",$route['account_id'])
-      ->whereNull("deleted_at")
-      ->pluck('status');
-    $person = json_decode($person,true);
-    for ($i=0 ; $i<2 ; $i++){
-      if (count($routes[$i])==0){
-        if (isset($person[0])){
-          $routes[$i] = $person[0];
-        }else{
-          $routes[$i] = 'negative';
+      ->whereIn('T1.route',[$route['from'],$route['to']])
+      ->select(['T1.route AS route','T2.status AS status'])
+      ->get();
+    $routes = json_decode($routes,true); 
+    foreach ($routes as $key => $value) {
+      if ($value['route']==$route['from']){
+        if (array_search($value['status'],$possibleStatus)<array_search($retVal['from'],$possibleStatus)){
+          $retVal['from'] = $value['status'];
         }
-      }else {
-        $routes[$i] = $routes[$i]->groupBy('status');
-        $routes[$i] = json_decode($routes[$i],true); 
-        $routes[$i] = $routes[$i][null];
-        if (in_array('death',$routes[$i]) || (isset($person[0]) && $person[0]=='death')){
-          $routes[$i] = 'death';
-        }else if (in_array('positive',$routes[$i]) || (isset($person[0]) && $person[0]=='positive')){
-          $routes[$i] = 'positive';
-        }else if (in_array('pum',$routes[$i]) || (isset($person[0]) && $person[0]=='pum')){
-          $routes[$i] = 'pum';
-        }else if (in_array('pui',$routes[$i]) || (isset($person[0]) && $person[0]=='pui')){
-          $routes[$i] = 'pui';
-        }else {
-          $routes[$i] = 'negative';
+      }else if ($value['route']==$route['to']){
+        if (array_search($value['status'],$possibleStatus)<array_search($retVal['to'],$possibleStatus)){
+          $retVal['to'] = $value['status'];
         }
       }
     }
-    $routes['from'] = &$routes[0];
-    unset($routes[0]);
-    $routes['to'] = &$routes[1];
-    unset($routes[1]);
-    return $routes;
+    return $retVal;
   }
 }

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateVisitedPlacesTable extends Migration
+class CreateLocationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,15 @@ class CreateVisitedPlacesTable extends Migration
      */
     public function up()
     {
-        Schema::create('visited_places', function (Blueprint $table) {
+        Schema::create('locations', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->bigInteger('patient_id');
+            $table->bigInteger('account_id');
             $table->string('longitude');
             $table->string('latitude');
             $table->string('route');
             $table->string('locality');
             $table->string('country');
             $table->string('region');
-            $table->date('date')->nullable();
-            $table->time('time')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -36,6 +34,6 @@ class CreateVisitedPlacesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('visited_places');
+        Schema::dropIfExists('locations');
     }
 }

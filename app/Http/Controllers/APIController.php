@@ -41,21 +41,21 @@ class APIController extends Controller
   );
 
   protected $whiteListedDomain = array(
-    'https://payhiram.ph/',
-    'https://www.payhiram.ph/',
-    'http://www.payhiram.ph/',
-    'http://payhiram.ph/',
+    'https://birds-eye.org/',
+    'https://www.birds-eye.org/',
+    'http://www.birds-eye.org/',
+    'http://birds-eye.org/',
     'http://localhost:8001/',
-    'com.payhiram'
+    'com.birdseye'
   );
 
   protected $whiteListedDomainOrigin = array(
-    'https://payhiram.ph',
-    'https://www.payhiram.ph',
-    'http://www.payhiram.ph',
-    'http://payhiram.ph',
-    'com.payhiram',
-    'http://localhost:8001'
+    'https://birds-eye.org',
+    'https://www.birds-eye.org',
+    'http://www.birds-eye.org',
+    'http://birds-eye.org',
+    'http://localhost:8001',
+    'com.birdseye'
   );
 
   protected $notRequired = array();
@@ -66,79 +66,79 @@ class APIController extends Controller
 
   public function checkAuthenticatedUser($flag = false)
   {
-    // if(env('TEST') == false){
-    //   if($flag == true){
-    //     if(isset($_SERVER['HTTP_REFERER']) && !in_array($_SERVER['HTTP_REFERER'], $this->whiteListedDomain)){
-    //       $this->response['error'] = array(
-    //         'message' => 'Invalid Domain!',
-    //         'status'  => 404
-    //       );
-    //       return false;
-    //     }
-    //     if(isset($_SERVER['HTTP_ORIGIN']) && !in_array($_SERVER['HTTP_ORIGIN'], $this->whiteListedDomainOrigin)){
-    //       $this->response['error'] = array(
-    //         'message' => 'Invalid Domain!',
-    //         'status'  => 404
-    //       );
-    //       return false;
-    //     }
-    //     return true;
-    //   }
-    //   try {
-    //     $user = JWTAuth::parseToken()->authenticate();
-    //     return true;
-    //   } catch (TokenExpiredException $e) {
-    //     $this->response['error'] = array(
-    //       'message' => 'Invalid Credentials',
-    //       'status'  => $e->getStatusCode()
-    //     );
-    //     return false;
-    //   } catch (TokenInvalidException $e) {
-    //     $this->response['error'] = array(
-    //       'message' => 'Invalid Credentials',
-    //       'status'  => $e->getStatusCode()
-    //     );
-    //     return false;
-    //   }      
-    // }else{
-    //   if(isset($_SERVER['HTTP_REFERER']) && !in_array($_SERVER['HTTP_REFERER'], $this->whiteListedDomain)){
-    //     $this->response['error'] = array(
-    //       'message' => 'Invalid Domain!',
-    //       'status'  => 404
-    //     );
-    //     return false;
-    //   }
-    //   if(isset($_SERVER['HTTP_ORIGIN']) && !in_array($_SERVER['HTTP_ORIGIN'], $this->whiteListedDomainOrigin)){
-    //     $this->response['error'] = array(
-    //       'message' => 'Invalid Domain!',
-    //       'status'  => 404
-    //     );
-    //     return false;
-    //   }
-    //   try {
-    //     $user = JWTAuth::parseToken()->authenticate();
-    //     return true;
-    //   } catch (TokenExpiredException $e) {
-    //     $this->response['error'] = array(
-    //       'message' => 'Invalid Credentials',
-    //       'status'  => $e->getStatusCode()
-    //     );
-    //     return false;
-    //   } catch (TokenInvalidException $e) {
-    //     $this->response['error'] = array(
-    //       'message' => 'Invalid Credentials',
-    //       'status'  => $e->getStatusCode()
-    //     );
-    //     return false;
+    if(env('TEST') == false){
+      // if($flag == true){
+      //   if(isset($_SERVER['HTTP_REFERER']) && !in_array($_SERVER['HTTP_REFERER'], $this->whiteListedDomain)){
+      //     $this->response['error'] = array(
+      //       'message' => 'Invalid Domain!',
+      //       'status'  => 404
+      //     );
+      //     return false;
+      //   }
+      //   if(isset($_SERVER['HTTP_ORIGIN']) && !in_array($_SERVER['HTTP_ORIGIN'], $this->whiteListedDomainOrigin)){
+      //     $this->response['error'] = array(
+      //       'message' => 'Invalid Domain!',
+      //       'status'  => 404
+      //     );
+      //     return false;
+      //   }
+      //   return true;
+      // }
+      try {
+        $user = JWTAuth::parseToken()->authenticate();
+        return true;
+      } catch (TokenExpiredException $e) {
+        $this->response['error'] = array(
+          'message' => 'Invalid Credentials',
+          'status'  => $e->getStatusCode()
+        );
+        return false;
+      } catch (TokenInvalidException $e) {
+        $this->response['error'] = array(
+          'message' => 'Invalid Credentials',
+          'status'  => $e->getStatusCode()
+        );
+        return false;
+      }      
+    }else{
+      // if(isset($_SERVER['HTTP_REFERER']) && !in_array($_SERVER['HTTP_REFERER'], $this->whiteListedDomain)){
+      //   $this->response['error'] = array(
+      //     'message' => 'Invalid Domain!',
+      //     'status'  => 404
+      //   );
+      //   return false;
+      // }
+      // if(isset($_SERVER['HTTP_ORIGIN']) && !in_array($_SERVER['HTTP_ORIGIN'], $this->whiteListedDomainOrigin)){
+      //   $this->response['error'] = array(
+      //     'message' => 'Invalid Domain!',
+      //     'status'  => 404
+      //   );
+      //   return false;
+      // }
+      try {
+        $user = JWTAuth::parseToken()->authenticate();
+        return true;
+      } catch (TokenExpiredException $e) {
+        $this->response['error'] = array(
+          'message' => 'Invalid Credentials',
+          'status'  => $e->getStatusCode()
+        );
+        return false;
+      } catch (TokenInvalidException $e) {
+        $this->response['error'] = array(
+          'message' => 'Invalid Credentials',
+          'status'  => $e->getStatusCode()
+        );
+        return false;
 
-    //   } catch (JWTException $e) {
-    //     $this->response['error'] = array(
-    //       'message' => 'Invalid Credentials',
-    //       'status'  => $e->getStatusCode()
-    //     );
-    //     return false;
-    //   }
-    // }
+      } catch (JWTException $e) {
+        $this->response['error'] = array(
+          'message' => 'Invalid Credentials',
+          'status'  => $e->getStatusCode()
+        );
+        return false;
+      }
+    }
     // the token is valid and we have found the user via the sub claim
     return true;
   }
@@ -428,8 +428,12 @@ class APIController extends Controller
         $condition["clause"] = (isset($condition["clause"])) ? $condition["clause"] : "=";
         $condition["value"] = (isset($condition["value"])) ? $condition["value"] : null;
         switch($condition["clause"]){
+          case 'or':
+            $this->model = $this->model->orWhere($condition["column"], '=', $condition["value"]);
+            break;
           default :
             $this->model = $this->model->where($condition["column"], $condition["clause"], $condition["value"]);
+            break;
         }
       }
     }
@@ -597,7 +601,35 @@ class APIController extends Controller
     $result['account_profile'] = app('Increment\Account\Http\AccountProfileController')->getAccountProfile($accountId);
     $result['notification_settings'] = app('App\Http\Controllers\NotificationSettingController')->getNotificationSettings($accountId);
     $result['sub_account'] = app('Increment\Account\Http\SubAccountController')->retrieveByParams('member', $accountId);
+    $result['transportation'] = app('App\Http\Controllers\TransportationController')->getByParams('account_id', $accountId);
+    $result['overall_status'] = app('App\Http\Controllers\TracingController')->getStatusByAccountId($accountId);
     return $result;
+  }
+
+  public function daysDiffDateTime($date){
+    $currentDate = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
+    $givenDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d H:i:s', $date)->tz($this->response['timezone'])->format("Y-m-d H:i:s"));
+    $days = $givenDate->diffInDays($currentDate);
+    if($days > 1){
+      return $days .' Days Ago';
+    }else if($days == 1){
+      return 'Yesterday';
+    }else{
+      return 'Today';
+    }
+  }
+
+  public function daysDiffByDate($date){
+    $currentDate = Carbon::parse(Carbon::now()->format("Y-m-d H:i:s"));
+    $givenDate = Carbon::Parse(Carbon::createFromFormat('Y-m-d', $date)->tz($this->response['timezone'])->format("Y-m-d H:i:s"));
+    $days = $givenDate->diffInDays($currentDate);
+    if($days > 1){
+      return $days .' Days Ago';
+    }else if($days == 1){
+      return 'Yesterday';
+    }else{
+      return 'Today';
+    }
   }
 
 }

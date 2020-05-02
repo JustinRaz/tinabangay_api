@@ -120,6 +120,7 @@ $route = env('PACKAGE_ROUTE', '').'/temperatures/';
 $controller = 'TemperatureController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'retrieve_tracing', $controller."retrieveTracing");
 Route::post($route.'summary', $controller."summary");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
@@ -139,6 +140,7 @@ $route = env('PACKAGE_ROUTE', '').'/visited_places/';
 $controller = 'VisitedPlaceController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'retrieve_tracing', $controller."retrieveTracing");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
@@ -147,7 +149,9 @@ Route::get($route.'test', $controller.'test');
 $route = env('PACKAGE_ROUTE', '').'/patients/';
 $controller = 'PatientController@';
 Route::post($route.'create', $controller."create");
+Route::post($route.'linking', $controller."linking");
 Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'retrieve_notifications', $controller."retrieveNotifications");
 Route::post($route.'summary', $controller."summary");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
@@ -158,15 +162,12 @@ Route::get($route.'test', $controller.'test');
 $route = env('PACKAGE_ROUTE', '').'/tracings/';
 $controller = 'TracingController@';
 Route::post($route.'tree', $controller."tree");
+Route::post($route.'status', $controller."getStatus");
 
 //Tracing Controller
 $route = env('PACKAGE_ROUTE', '').'/tracing_places/';
 $controller = 'TracingPlaceController@';
 Route::post($route.'places', $controller."places");
-
-//Rides Controller
-$route = env('PACKAGE_ROUTE', '').'/rides/';
-$controller = 'RideController@';
 
 //Google Places Controller
 $route = env('PACKAGE_ROUTE', '').'/google_places/';
@@ -178,6 +179,7 @@ $route = env('PACKAGE_ROUTE', '').'/transportations/';
 $controller = 'TransportationController@';
 Route::post($route.'create', $controller."create");
 Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'retrieve_tracing', $controller."retrieveTracing");
 Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
@@ -191,7 +193,7 @@ Route::post($route.'update', $controller."update");
 Route::post($route.'delete', $controller."delete");
 Route::get($route.'test', $controller.'test');
 
-//Ride History Controller
+//Ride Controller
 $route = env('PACKAGE_ROUTE', '').'/rides/';
 $controller = 'RideController@';
 Route::post($route.'create', $controller."create");
@@ -204,3 +206,26 @@ Route::get($route.'test', $controller.'test');
 $route = env('PACKAGE_ROUTE', '').'/transportationmapping/';
 $controller = 'TransportationMappingController@';
 Route::post($route.'map', $controller.'map');
+
+//Location Controller
+$route = env('PACKAGE_ROUTE', '').'/locations/';
+$controller = 'LocationController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
+
+//GoogleSheetController Controller
+$route = env('PACKAGE_ROUTE', '').'/exports/';
+$controller = 'GoogleSheetController@';
+Route::post($route.'patients', $controller.'patients');
+
+//Linked Account Controller
+$route = env('PACKAGE_ROUTE', '').'/linked_accounts/';
+$controller = 'LinkedAccountController@';
+Route::post($route.'create', $controller."create");
+Route::post($route.'retrieve', $controller."retrieve");
+Route::post($route.'update', $controller."update");
+Route::post($route.'delete', $controller."delete");
+Route::get($route.'test', $controller.'test');
